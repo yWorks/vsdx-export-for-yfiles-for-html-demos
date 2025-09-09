@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+<!-- ////////////////////////////////////////////////////////////////////////
+     // @license
+     // This demo file is part of the VSDX Export for yFiles for HTML.
+     // Copyright (c) by yWorks GmbH, Vor dem Kreuzberg 28,
+     // 72070 Tuebingen, Germany. All rights reserved.
+     // 
+     // yFiles demo files exhibit VSDX Export for yFiles for HTML functionalities.
+     // Any redistribution of demo files in source code or binary form, with
+     // or without modification, is not permitted.
+     // 
+     // Owners of a valid software license for a VSDX Export for yFiles for HTML
+     // version that this demo is shipped with are allowed to use the demo
+     // source code as basis for their own VSDX Export for yFiles for HTML
+     // powered applications. Use of such programs is
+     // governed by the rights
+     // and conditions as set out in the VSDX Export for yFiles for HTML
+     // license agreement.
+     // 
+     // THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED
+     // WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+     // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
+     // NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+     // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+     // TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+     // PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+     // LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+     // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     // 
+     ////////////////////////////////////////////////////////////////////////-->
+
+  <title>Styles Viewer Demo [VSDX Export for yFiles for HTML]</title>
+
+    <style>
+      .export {
+        background-image: url('/download-16.svg');
+      }
+
+      #graphComponent.checkerboard {
+        background-color: #ebeef0;
+        background-size: 24px 24px;
+        background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><rect fill="rgb(194,196,198)" x="0" y="0" width="12" height="12"/><rect fill="rgb(194,196,198)" x="12" y="12" width="12" height="12"/></svg>');
+      }
+    </style>
+  </head>
+
+  <body class="demo-has-left">
+    <aside class="demo-sidebar demo-left">
+      <div class="demo-sidebar-content">
+        <h1>Styles Viewer Demo</h1>
+        <div>
+          <p>
+            This demo displays several sample graphs from various domains and exports them to VSDX
+            file format.
+          </p>
+          <h2>Things to try</h2>
+          <li>
+            Use the combo box or the navigation buttons to switch between several sample graphs.
+          </li>
+          <li>
+            Press <img src="./public/download-16.svg" alt="export" /> to export the graph to the
+            VSDX file format.
+          </li>
+        </div>
+      </div>
+    </aside>
+
+    <div class="demo-content">
+      <div class="demo-toolbar">
+        <button data-command="New" class="demo-icon-yIconNew"></button>
+        <button id="open-button" class="demo-icon-yIconOpen"></button>
+        <button id="save-button" class="demo-icon-yIconSave"></button>
+
+        <span class="demo-separator"></span>
+
+        <button
+          data-command="ExportToVisio"
+          title="Export To VSDX"
+          class="demo-icon-export demo-toolbar-button"
+        ></button>
+
+        <span class="demo-separator"></span>
+
+        <button data-command="ZoomIn" class="demo-icon-yIconZoomIn demo-toolbar-button"></button>
+        <button
+          data-command="ZoomOriginal"
+          class="demo-icon-yIconZoomOriginal demo-toolbar-button"
+        ></button>
+        <button data-command="ZoomOut" class="demo-icon-yIconZoomOut demo-toolbar-button"></button>
+        <button
+          data-command="FitContent"
+          class="demo-icon-yIconZoomFit demo-toolbar-button"
+        ></button>
+
+        <span class="demo-separator"></span>
+
+        <button data-command="Cut" class="demo-icon-yIconCut"></button>
+        <button data-command="Copy" class="demo-icon-yIconCopy"></button>
+        <button data-command="Paste" class="demo-icon-yIconPaste"></button>
+        <button data-command="Delete" class="demo-icon-yIconDelete"></button>
+
+        <span class="demo-separator"></span>
+
+        <button data-command="Undo" class="demo-icon-yIconUndo"></button>
+        <button data-command="Redo" class="demo-icon-yIconRedo"></button>
+
+        <span class="demo-separator"></span>
+
+        <button data-command="GroupSelection" class="demo-icon-yIconGroup"></button>
+        <button data-command="UngroupSelection" class="demo-icon-yIconUngroup"></button>
+
+        <span class="demo-separator"></span>
+
+        <select title="Select a sample graph" id="graph-chooser-box"></select>
+
+        <span class="demo-separator"></span>
+        <button id="layout-button" title="Layout" class="demo-icon-yIconLayout labeled">
+          Layout
+        </button>
+      </div>
+
+      <div>
+        <div id="graphOverviewComponent" class="demo-overview-container">
+          <div class="demo-overview-header">Overview</div>
+          <div id="overviewComponent"></div>
+        </div>
+
+        <div id="graphComponent"></div>
+      </div>
+
+      <div id="loadingIndicator">Exporting...</div>
+    </div>
+
+    <script type="module" src="/src/StylesDemo.js"></script>
+    <script nomodule></script>
+  </body>
+</html>

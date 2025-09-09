@@ -1,0 +1,20 @@
+{
+  "name": "@yfiles/multigraph-demo-for-the-vsdx-export",
+  "version": "3.0.0",
+  "author": "yWorks GmbH <yfileshtml@yworks.com>",
+  "license": "https://www.yworks.com/products/yfiles-for-html/sla",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "vite": "^6.2.5"
+  },
+  "browserslist": [
+    "defaults"
+  ]
+}

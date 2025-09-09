@@ -1,0 +1,31 @@
+{
+  "name": "@yfiles/webpack-demo-for-the-vsdx-export",
+  "version": "3.0.0",
+  "author": "yWorks GmbH <yfileshtml@yworks.com>",
+  "license": "https://www.yworks.com/products/yfiles-for-html/sla",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "webpack serve --mode development --open",
+    "build": "webpack --mode development",
+    "production": "webpack --mode production"
+  },
+  "devDependencies": {
+    "@babel/core": "~7.26.10",
+    "@babel/preset-env": "~7.26.9",
+    "@babel/preset-typescript": "~7.26.0",
+    "babel-loader": "~10.0.0",
+    "css-loader": "~7.1.2",
+    "html-webpack-plugin": "~5.6.3",
+    "mini-css-extract-plugin": "~2.9.2",
+    "style-loader": "~4.0.0",
+    "webpack": "~5.98.0",
+    "webpack-cli": "~6.0.1",
+    "webpack-dev-server": "~5.2.0",
+    "@yworks/optimizer": "^1.8.4",
+    "typescript": "~5.8.3"
+  },
+  "browserslist": [
+    "defaults"
+  ]
+}
