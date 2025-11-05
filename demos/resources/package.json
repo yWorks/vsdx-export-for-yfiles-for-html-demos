@@ -1,6 +1,6 @@
 {
   "name": "@yfiles/demo-resources",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "author": "yWorks GmbH <yfileshtml@yworks.com>",
   "license": "https://www.yworks.com/products/yfiles-for-html/sla",
   "private": true,
@@ -11,8 +11,5 @@
     "./icons/*": "./icons/*",
     "./demo.css": "./style/demo.css",
     "./save-blob": "./save-blob.ts"
-  },
-  "dependencies": {
-    "@yfiles/yfiles": ">= 30"
   }
 }
