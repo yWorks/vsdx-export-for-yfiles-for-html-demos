@@ -20,54 +20,21 @@
  *   THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {
-  type GeneralPath,
-  type GraphComponent,
-  type INode,
-  type INodeStyle,
-  type IRenderContext,
-  Matrix,
-  NodeStyleBase,
-  SvgVisual,
-  type TaggedSvgVisual,
-} from '@yfiles/yfiles'
+import { Matrix, NodeStyleBase, SvgVisual } from '@yfiles/yfiles'
 import { nothing, render, svg } from 'lit-html'
 import { LitSvgText } from './LitSvgText'
 
 /**
- * The interface of the props passed to the lit render function for rendering the node's SVG
- * contents.
- */
-export interface LitNodeStyleProps<TTag = any> {
-  layout: { width: number; height: number }
-  selected: boolean
-  zoom: number
-  tag: TTag
-}
-
-/**
- * Caching the properties of the LitNodeStyle to decide whether a style update is necessary.
- */
-type LitNodeStyleVisual<TTag> = TaggedSvgVisual<SVGGElement, LitNodeStyleProps<TTag>>
-
-/**
- * The render function used for the Lit node style.
- */
-export type LitNodeStyleRenderFunction<T> = (
-  context: LitNodeStyleProps<T>,
-) => ReturnType<typeof svg>
-
-/**
  * A node style which uses Lit render functions for displaying the contents of a node with SVG.
  */
-export class LitNodeStyle<T = any> extends NodeStyleBase<LitNodeStyleVisual<T>> {
-  readonly renderFunction: LitNodeStyleRenderFunction<T>
-  normalizedOutline?: GeneralPath
+export class LitNodeStyle extends NodeStyleBase {
+  renderFunction
+  normalizedOutline
 
   /**
    * Creates the style using the provided render function.
    */
-  constructor(renderFunction: LitNodeStyleRenderFunction<T>) {
+  constructor(renderFunction) {
     super()
     this.renderFunction = renderFunction
   }
@@ -79,13 +46,12 @@ export class LitNodeStyle<T = any> extends NodeStyleBase<LitNodeStyleVisual<T>> 
    * @param context The renderContext to be used
    * @param node The node to which this style instance is assigned
    */
-  createProps(context: IRenderContext, node: INode): LitNodeStyleProps<T> {
+  createProps(context, node) {
     return {
       layout: { width: node.layout.width, height: node.layout.height },
-      selected:
-        (context.canvasComponent as GraphComponent).selection?.nodes.includes(node) ?? false,
+      selected: context.canvasComponent.selection?.nodes.includes(node) ?? false,
       zoom: context.zoom,
-      tag: node.tag as T,
+      tag: node.tag,
     }
   }
 
@@ -95,7 +61,7 @@ export class LitNodeStyle<T = any> extends NodeStyleBase<LitNodeStyleVisual<T>> 
    * @param context The renderContext to be used
    * @param node The node to which this style instance is assigned
    */
-  createVisual(context: IRenderContext, node: INode): LitNodeStyleVisual<T> {
+  createVisual(context, node) {
     const props = this.createProps(context, node)
     const result = this.renderFunction(props)
 
@@ -104,7 +70,7 @@ export class LitNodeStyle<T = any> extends NodeStyleBase<LitNodeStyleVisual<T>> 
 
     const svgVisual = SvgVisual.from(gElement, props)
 
-    render(result, gElement as unknown as HTMLElement)
+    render(result, gElement)
 
     // return an SvgVisual that uses the g element that has been rendered into
     return svgVisual
@@ -118,11 +84,7 @@ export class LitNodeStyle<T = any> extends NodeStyleBase<LitNodeStyleVisual<T>> 
    * @param oldVisual The visual that has been created in the call to createVisual
    * @param node The node to which this style instance is assigned
    */
-  updateVisual(
-    context: IRenderContext,
-    oldVisual: LitNodeStyleVisual<T>,
-    node: INode,
-  ): LitNodeStyleVisual<T> {
+  updateVisual(context, oldVisual, node) {
     const gElement = oldVisual.svgElement
 
     const props = this.createProps(context, node)
@@ -138,7 +100,7 @@ export class LitNodeStyle<T = any> extends NodeStyleBase<LitNodeStyleVisual<T>> 
     ) {
       // props have changed, re-render
       const result = this.renderFunction(props)
-      render(result, gElement as unknown as HTMLElement)
+      render(result, gElement)
       oldVisual.tag = props
     }
 
@@ -147,7 +109,7 @@ export class LitNodeStyle<T = any> extends NodeStyleBase<LitNodeStyleVisual<T>> 
     return oldVisual
   }
 
-  protected getOutline(node: INode): GeneralPath | null {
+  getOutline(node) {
     if (!this.normalizedOutline) {
       return super.getOutline(node)
     }
@@ -162,7 +124,7 @@ export class LitNodeStyle<T = any> extends NodeStyleBase<LitNodeStyleVisual<T>> 
  *
  * @param renderFunctionSource The source of the function
  */
-export function createLitNodeStyleFromSource(renderFunctionSource: string): INodeStyle {
+export function createLitNodeStyleFromSource(renderFunctionSource) {
   const renderFunction = new Function(
     'const svg = arguments[0]; const nothing = arguments[1]; const LitSvgText = arguments[2];' +
       'const renderFunction = ' +

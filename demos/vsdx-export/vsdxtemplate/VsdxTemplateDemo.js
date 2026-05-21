@@ -1,0 +1,79 @@
+/**
+ * @license This demo file is part of the VSDX Export for yFiles for HTML. Copyright (c)
+ *   by yWorks GmbH, Vor dem Kreuzberg 28, 72070 Tuebingen, Germany. All rights reserved.
+ *
+ *   YFiles demo files exhibit VSDX Export for yFiles for HTML functionalities. Any redistribution of
+ *   demo files in source code or binary form, with or without modification, is not permitted.
+ *
+ *   Owners of a valid software license for a VSDX Export for yFiles for HTML version that this demo
+ *   is shipped with are allowed to use the demo source code as basis for their own VSDX Export for
+ *   yFiles for HTML powered applications. Use of such programs is governed by the rights and
+ *   conditions as set out in the VSDX Export for yFiles for HTML license agreement.
+ *
+ *   THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ *   EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ *   GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ *   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ *   THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+import { demoApp, graphComponent } from '@yfiles/demo-app/init'
+import { Insets, PolylineEdgeStyle } from '@yfiles/yfiles'
+import { initDemoStyles } from '@yfiles/demo-app/demo-styles'
+import { VsdxExportConfiguration, VsdxIO } from '@yfiles/vsdx-export'
+import saveBlob from '@yfiles/demo-utils/save-blob'
+
+// bind toolbar commands
+initializeUI()
+
+// Assign the default demo styles
+initDemoStyles(graphComponent.graph)
+
+// load the first graph
+createSampleGraph(graphComponent.graph)
+
+void graphComponent.fitGraphBounds()
+
+async function runExport() {
+  const fileName = 'Diagram.vsdx'
+
+  // load the template file
+  const template = await fetch('./resources/template.vsdx').then((r) => r.blob())
+  const vsdxIO = await VsdxIO.fromBlob(template)
+
+  // create a configuration
+  const config = VsdxExportConfiguration.createDefault()
+  config.margins = new Insets(200)
+
+  // add the yFiles diagram
+  const page = vsdxIO.vsdxPackage.pages.get(1)
+  await vsdxIO.addGraph(graphComponent, config, page)
+
+  // save the created VSDX file
+  const blob = await vsdxIO.writeBlob(config)
+  saveBlob(blob, fileName)
+}
+
+/**
+ * Registers commands for the toolbar buttons.
+ */
+function initializeUI() {
+  demoApp.toolbar.addSeparator()
+  demoApp.toolbar.addButton('Export to VSDX', runExport)
+}
+
+/**
+ * Creates the sample graph
+ */
+function createSampleGraph(graph) {
+  graph.edgeDefaults.style = new PolylineEdgeStyle()
+  const n1 = graph.createNodeAt({ location: [0, 0], labels: ['Node 1'] })
+  const n2 = graph.createNodeAt({ location: [-50, 100], labels: ['Node 2'] })
+  const n3 = graph.createNodeAt({ location: [50, 100], labels: ['Node 3'] })
+  graph.createEdge({ source: n1, target: n2 })
+  graph.createEdge({ source: n2, target: n3 })
+  graph.createEdge({ source: n3, target: n1 })
+}
