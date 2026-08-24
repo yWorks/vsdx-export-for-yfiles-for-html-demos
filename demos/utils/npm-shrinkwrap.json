@@ -1,15 +1,15 @@
 {
   "name": "@yfiles/demo-utils",
-  "version": "31.0.0",
+  "version": "31.1.0+eap",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
     "": {
       "name": "@yfiles/demo-utils",
-      "version": "31.0.0",
+      "version": "31.1.0+eap",
       "license": "https://www.yworks.com/products/yfiles-for-html/sla",
       "dependencies": {
-        "lit-html": "~3.3.2"
+        "lit-html": "~3.3.3"
       }
     },
     "node_modules/@types/trusted-types": {
@@ -19,9 +19,9 @@
       "license": "MIT"
     },
     "node_modules/lit-html": {
-      "version": "3.3.2",
-      "resolved": "https://registry.npmjs.org/lit-html/-/lit-html-3.3.2.tgz",
-      "integrity": "sha512-Qy9hU88zcmaxBXcc10ZpdK7cOLXvXpRoBxERdtqV9QOrfpMZZ6pSYP91LhpPtap3sFMUiL7Tw2RImbe0Al2/kw==",
+      "version": "3.3.3",
+      "resolved": "https://registry.npmjs.org/lit-html/-/lit-html-3.3.3.tgz",
+      "integrity": "sha512-el8M6jK2o3RXBnrSHX3ZKrsN8zEV63pSExTO1wYJz7QndGYZ8353e2a5PPX+qHe2aGayfnchQmkAojaWAREOIA==",
       "license": "BSD-3-Clause",
       "dependencies": {
         "@types/trusted-types": "^2.0.2"

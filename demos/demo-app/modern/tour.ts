@@ -51,7 +51,7 @@ export type TipDialogConfig = {
 
 export type Tour = { tips: Tip[] }
 
-const defaultPadding = 0
+const defaultPadding = 10
 
 let currentPage = 0
 let visibleTips: Tip[] = []
@@ -514,7 +514,9 @@ function buildPagesList(tour: Tour, dialog: HTMLDialogElement) {
   visibleTips.forEach((tip, index) => {
     const li = document.createElement('li')
     li.className = 'tour-page-item' + (index === currentPage ? ' active' : '')
-
+    const marker = document.createElement('span')
+    marker.className = 'tour-page-item-marker'
+    marker.textContent = 'circle'
     const btn = document.createElement('button')
     btn.className = 'tour-page-link'
     btn.type = 'button'
@@ -529,7 +531,7 @@ function buildPagesList(tour: Tour, dialog: HTMLDialogElement) {
         nextBtn.disabled = false
       }
     })
-
+    li.appendChild(marker)
     li.appendChild(btn)
     ul.appendChild(li)
   })

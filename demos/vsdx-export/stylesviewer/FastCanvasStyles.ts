@@ -24,7 +24,6 @@ import {
   EdgeStyleBase,
   Font,
   FontStyle,
-  HierarchicalLayout,
   HtmlCanvasVisual,
   type IBend,
   type IEdge,
@@ -42,7 +41,6 @@ import {
   type Point,
   Size,
 } from '@yfiles/yfiles'
-import { demoApp, graphComponent } from '@yfiles/demo-app/init'
 
 export class FastNodeStyle extends NodeStyleBase {
   createVisual(renderContext: IRenderContext, node: INode): NodeCanvasVisual {
@@ -78,7 +76,7 @@ class NodeCanvasVisual extends HtmlCanvasVisual {
   /**
    * Draws a rectangle with a solid orange fill.
    *
-   * @see Overrides {@link HtmlCanvasVisual.paint}
+   * @see Overrides {@link HtmlCanvasVisual.render}
    */
   render(renderContext: IRenderContext, ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = 'rgba(255,140,0,1)'

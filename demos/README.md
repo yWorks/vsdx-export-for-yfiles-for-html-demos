@@ -1,10 +1,13 @@
-# VSDX Export for yFiles for HTML Demo Applications
+# VSDX Export for yFiles for HTML Demos
 
-The demos and tutorials are extensive sample applications that present the features of the [VSDX Export for yFiles for HTML](https://www.yworks.com/products/yfiles/vsdx-export) diagramming library.
+This directory contains source code demo applications and tutorials to help you get started.
+They present best practices for working with the VSDX Export and show how to realize your requirements.
 
-The complete source code of all of these samples is part of the VSDX Export for yFiles for HTML package and available at [Github](https://github.com/yWorks/vsdx-export-for-yfiles-for-html-demos)
+The recommended way of browsing the demos is the demo server:
 
-To execute a specific sample, click on its card below.
+````shell
+npm start
+````
 
 # [Vsdx Export](vsdx-export)
 

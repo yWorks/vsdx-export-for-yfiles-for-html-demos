@@ -1,6 +1,8 @@
-# Basic VSDX Export Demo - VSDX Export for yFiles for HTML
+# Basic VSDX Export Demo – yFiles for HTML
 
 <img src="../../../doc/demo-thumbnails/vsdx-basic.webp" alt="demo-thumbnail" height="320"/>
+
+Demo
 
 Shows how to export a yFiles diagram to a VSDX file. Press the "Export to VSDX" button to start the export.
 

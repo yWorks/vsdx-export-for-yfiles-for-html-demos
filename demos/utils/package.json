@@ -1,6 +1,6 @@
 {
   "name": "@yfiles/demo-utils",
-  "version": "31.0.0",
+  "version": "31.1.0",
   "author": "yWorks GmbH <yfileshtml@yworks.com>",
   "license": "https://www.yworks.com/products/yfiles-for-html/sla",
   "private": true,
@@ -10,6 +10,6 @@
     "./*.ts": "./*.ts"
   },
   "dependencies": {
-    "lit-html": "~3.3.2"
+    "lit-html": "~3.3.3"
   }
 }

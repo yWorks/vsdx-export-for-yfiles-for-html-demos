@@ -36,7 +36,7 @@ import {
 } from '@yfiles/vsdx-export'
 import saveBlob from '@yfiles/demo-utils/save-blob'
 import { INode } from '@yfiles/yfiles'
-import { showLoadingIndicator } from '@yfiles/demo-app/element-utils'
+import { showLoadingIndicator } from '@yfiles/demo-app/modern/element-utils'
 
 /**
  * Exports the graph of the given graph component to the VSDX file format and starts a download for

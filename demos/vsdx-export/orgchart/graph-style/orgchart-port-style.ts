@@ -38,10 +38,10 @@ export function setOrgChartPortStyle(orgChartGraph: CollapsibleTree): void {
       const portStyle = new CollapseExpandPortStyle(
         new Size(20, 20),
         (port) =>
-          (orgChartGraph.completeGraph.contains(port) &&
-            orgChartGraph.completeGraph.edgesAt(port).size) !==
-          (orgChartGraph.filteredGraph.contains(port) &&
-            orgChartGraph.filteredGraph.edgesAt(port).size),
+          orgChartGraph.completeGraph.contains(port) &&
+          orgChartGraph.filteredGraph.contains(port) &&
+          orgChartGraph.completeGraph.edgesAt(port).size !==
+            orgChartGraph.filteredGraph.edgesAt(port).size,
       )
       filteredGraph.setStyle(firstOutgoingPort, portStyle)
       filteredGraph.setPortLocationParameter(firstOutgoingPort, FreeNodePortLocationModel.BOTTOM)

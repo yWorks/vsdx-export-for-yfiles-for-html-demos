@@ -53,19 +53,16 @@ export function finishLoading() {
     window.location.hostname === 'live.yworks.com' ||
     window.location.hostname === 'www.yfiles.com'
   ) {
-    const githubLinkAnchor = document.querySelectorAll('.github-link')
-    if (githubLinkAnchor) {
-      for (const link of githubLinkAnchor) {
-        const githubLink = link.href
-        isAvailableOnGithub(githubLink).then((available) => {
-          if (!available) {
-            link.classList.add('disabled-link')
-            link.setAttribute('disabled', 'true')
-            link.setAttribute('tabindex', '-1')
-            link.ariaDisabled = 'true'
-          }
-        })
-      }
+    const githubLinks = document.querySelectorAll('a.github-link')
+    for (const link of githubLinks) {
+      isAvailableOnGithub(link.href).then((available) => {
+        if (!available) {
+          link.classList.add('disabled-link')
+          link.setAttribute('disabled', 'true')
+          link.setAttribute('tabindex', '-1')
+          link.ariaDisabled = 'true'
+        }
+      })
     }
   }
 
@@ -77,16 +74,19 @@ async function isAvailableOnGithub(link) {
   if (link === 'preview') {
     return false
   }
-  // the actual github link is not CORS enabled, use raw instead
-  const url = `https://raw.githubusercontent.com/${link
-    .replace('https://github.com/', '')
-    .replace('tree/', '')}README.md`
-  const controller = new AbortController()
-  setTimeout(() => controller.abort(), 10000)
   try {
-    const resp = await fetch(url, { method: 'HEAD', signal: controller.signal })
-    return resp.ok
-  } catch (e) {}
+    const resp = await fetch('/demos/github-availability.json', {
+      signal: AbortSignal.timeout(10_000),
+    })
+    if (resp.ok) {
+      const availabilityMap = await resp.json()
+      const [categoryFolder, demoFolder] = link
+        .replace(/.*demos\//, '')
+        .split('/')
+        .slice(0, 2)
+      return availabilityMap[categoryFolder]?.includes(demoFolder)
+    }
+  } catch {}
   return false
 }
 

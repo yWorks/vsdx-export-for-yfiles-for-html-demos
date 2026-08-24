@@ -20,11 +20,17 @@
  *   THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/// <reference types="vite/client" />
 import './modern/modern-init.css'
 import './modern/modern.css'
 import { createPanelFor } from './modern/navigation-rail'
 import { initializeBurgerMenu, openBurgerMenu } from './modern/burger-menu'
 import { initResponsiveToolbars } from './modern/toolbar'
+import {
+  addNavigationButtons,
+  handleSplash,
+  maybeStartViewTransition,
+} from './modern/element-utils'
 
 function initializeNavigationRail() {
   createPanelFor(
@@ -52,29 +58,6 @@ function initializeNavigationRail() {
   }
 }
 
-/**
- * Executes a callback within a view transition if the browser supports it.
- *
- * @param callback The function to execute.
- */
-export function maybeStartViewTransition(callback: () => void | Promise<void>): void {
-  if (!document.startViewTransition) {
-    callback()
-    return
-  }
-
-  try {
-    document.startViewTransition(callback)
-  } catch (e) {
-    if (!(e instanceof DOMException)) {
-      // we do not throw DOMExceptions and just ignore them - view transitions can throw when the
-      // view gets closed and similar - we don't care about that and don't want to bother the user
-      // as this is just for the looks.
-      throw e
-    }
-  }
-}
-
 export function initializeSidePanel(panel: Element | null, title: string) {
   const panelBar = document.querySelector('.panel-bar')
   if (panel == null || panelBar == null) {
@@ -82,9 +65,9 @@ export function initializeSidePanel(panel: Element | null, title: string) {
   }
 
   // Get the panel to hide from the class name
-  const panelName = panel.className
+  const panelName = panel.className.split(' ')[0]
   const collapsePanel = document.createElement('div')
-  collapsePanel.classList.add('collapse-panel')
+  collapsePanel.classList.add('collapse-anchor')
   const collapseButton = document.createElement('button')
   collapseButton.classList.add('collapse', 'icon')
   collapseButton.title = `Collapse ${title} panel`
@@ -111,7 +94,7 @@ export function initializeSidePanel(panel: Element | null, title: string) {
   panelBar.append(expandButton)
 }
 
-function initOverviewPanel() {
+function initializeOverviewPanel() {
   const overlayAnchor = document.querySelector<HTMLElement>('.graph-overview-anchor')
   if (overlayAnchor == null) {
     return
@@ -154,7 +137,25 @@ function initOverviewPanel() {
   })
 }
 
-export function initializeUI() {
+function initializeSelectNavigationButtons() {
+  for (const select of document.querySelectorAll<HTMLSelectElement>('select[data-nav-buttons]')) {
+    addNavigationButtons(select)
+  }
+}
+
+function initializeTutorialUI() {
+  // handle dragging of description panel in tutorials
+  initTutorialDraggableDescription()
+
+  document.getElementById('tutorial-step-select')?.addEventListener('change', (evt) => {
+    window.location.href = (evt.target as HTMLSelectElement).value
+  })
+  // rest of init not relevant to tutorials
+  windowLoadSplash()
+  hideSplash()
+}
+
+function initializeUI() {
   const fullscreenButton = document.querySelector('button.fullscreen-button')!
   fullscreenButton.addEventListener('click', () => {
     toggleFullscreen()
@@ -166,15 +167,7 @@ export function initializeUI() {
   })
 
   if (document.body.classList.contains('demo-tutorial')) {
-    // handle dragging of description panel in tutorials
-    initTutorialDraggableDescription()
-
-    document.getElementById('tutorial-step-select')?.addEventListener('change', (evt) => {
-      window.location.href = (evt.target as HTMLSelectElement).value
-    })
-    // rest of init not relevant to tutorials
-    windowLoadSplash()
-    hideSplash()
+    initializeTutorialUI()
     return
   }
 
@@ -206,7 +199,7 @@ export function initializeUI() {
   initializeSidePanel(document.querySelector('.interaction-panel'), 'Interaction')
   initializeSidePanel(document.querySelector('.description-panel'), 'Description')
   initResponsiveToolbars()
-  initOverviewPanel()
+  initializeOverviewPanel()
   initMobileStartPage()
   document.addEventListener('DOMContentLoaded', () => {
     initSelectWidths('.toolbar')
@@ -226,6 +219,7 @@ export function initializeUI() {
     })
     graphMainPanel.append(mobileInteractionButton)
   }
+  initializeSelectNavigationButtons()
   windowLoadSplash()
   hideSplash()
 }
@@ -279,13 +273,6 @@ function toggleFullscreen(): void {
       documentElement.webkitRequestFullscreen((Element as any).ALLOW_KEYBOARD_INPUT)
     }
   }
-}
-
-function toTitleCase(str: string) {
-  return str.replace(
-    /\w\S*/g,
-    (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase(),
-  )
 }
 
 function initMobileStartPage() {
@@ -343,7 +330,7 @@ function initMobileStartPage() {
   document.body.classList.add('description-panel-visible')
 }
 
-export function initSelectWidths(containerSelector = '.toolbar'): void {
+function initSelectWidths(containerSelector = '.toolbar'): void {
   const containers = document.querySelectorAll<HTMLSelectElement>(containerSelector)
   if (!containers) return
   containers.forEach((container) => {
@@ -408,7 +395,8 @@ export function initSelectWidths(containerSelector = '.toolbar'): void {
     })
   })
 }
-export function observeSelectChanges(containerSelector = '.toolbar'): void {
+
+function observeSelectChanges(containerSelector = '.toolbar'): void {
   const container = document.querySelector(containerSelector)
   if (!container) return
 
@@ -568,92 +556,6 @@ function getNumberItemFromLocalStorage(key: string) {
   const size = parseFloat(storageItem)
 
   return Number.isFinite(size) ? size : null
-}
-
-export function handleSplash(
-  parentElementSelector: string,
-  visible: boolean,
-  message?: string,
-  immediate = false,
-) {
-  const gp = document.querySelector(parentElementSelector)
-  if (!gp) return
-
-  let el = document.querySelector<HTMLElement>('#loading-indicator')
-
-  if (!el) {
-    el = document.createElement('div')
-    el.id = 'loading-indicator'
-    el.classList.add('graph-splash')
-    gp.prepend(el)
-    el.dataset.activeCount = '0'
-  }
-  let activeRequests = parseInt(el.dataset.activeCount || '0')
-
-  const THRESHOLD = 450
-  const MIN_VISIBLE = 700
-  const EXIT_DURATION = 250
-
-  if (visible) {
-    activeRequests++
-    el.dataset.activeCount = activeRequests.toString()
-
-    // Splash already running
-    if (activeRequests > 1) {
-      if (message) el.innerHTML = `<span class="loading-message">${message}</span>`
-      return
-    }
-
-    // initial splash show
-    if (message) el.innerHTML = `<span class="loading-message">${message}</span>`
-
-    clearTimeout(parseInt(el.dataset.splashTimer || '0'))
-
-    if (immediate) {
-      el!.classList.remove('exit-splash')
-      el!.classList.add('visible-splash')
-      el!.dataset.startTime = Date.now().toString()
-    } else {
-      el.dataset.splashTimer = setTimeout(() => {
-        el!.classList.remove('exit-splash')
-        el!.classList.add('visible-splash')
-        el!.dataset.startTime = Date.now().toString()
-      }, THRESHOLD).toString()
-    }
-
-    return
-  } else {
-    activeRequests = Math.max(0, activeRequests - 1)
-    el.dataset.activeCount = activeRequests.toString()
-
-    // other call requires running splash
-    if (activeRequests > 0) {
-      return
-    }
-
-    // animation not started yet
-    if (!el.dataset.startTime) {
-      clearTimeout(parseInt(el.dataset.splashTimer || '0'))
-      el.remove()
-      return
-    }
-
-    const elapsed = Date.now() - parseInt(el.dataset.startTime)
-    const remaining = Math.max(0, MIN_VISIBLE - elapsed)
-
-    setTimeout(() => {
-      // if we were already in the process of shutting down but other task kept splash alive
-      if (parseInt(el!.dataset.activeCount || '0') > 0) return
-
-      el!.classList.remove('visible-splash')
-      el!.classList.add('exit-splash')
-
-      setTimeout(() => {
-        el!.remove()
-      }, EXIT_DURATION)
-    }, remaining)
-    return
-  }
 }
 
 function windowLoadSplash() {

@@ -24,14 +24,12 @@ import {
   EdgeStyleBase,
   Font,
   FontStyle,
-  HierarchicalLayout,
   HtmlCanvasVisual,
   LabelStyleBase,
   Matrix,
   NodeStyleBase,
   Size,
 } from '@yfiles/yfiles'
-import { demoApp, graphComponent } from '@yfiles/demo-app/init'
 
 export class FastNodeStyle extends NodeStyleBase {
   createVisual(renderContext, node) {
@@ -63,7 +61,7 @@ class NodeCanvasVisual extends HtmlCanvasVisual {
   /**
    * Draws a rectangle with a solid orange fill.
    *
-   * @see Overrides {@link HtmlCanvasVisual.paint}
+   * @see Overrides {@link HtmlCanvasVisual.render}
    */
   render(renderContext, ctx) {
     ctx.fillStyle = 'rgba(255,140,0,1)'

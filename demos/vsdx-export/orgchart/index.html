@@ -200,67 +200,14 @@
     <div class="navbar rail rail-collapsed">
       <nav>
         <button
-          class="guided-tour guided-tour-trigger"
+          class="guided-tour guided-tour-trigger hidden"
           aria-label="Walkthrough"
           title="Get a walkthrough of the demo"
         >
           <span class="icon">tooltip_2</span>
           <span class="label">Walkthrough</span>
         </button>
-        <a
-          href="https://github.com/yWorks/vsdx-export-for-yfiles-for-html-demos/tree/master/demos/vsdx-export/orgchart/"
-          target="_blank"
-          class="github-link"
-          title="View the demo's source code on GitHub"
-        >
-          <span class="icon">
-            <svg role="img" class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <title>GitHub</title>
-              <path
-                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-              />
-            </svg>
-          </span>
-          <span class="label">GitHub</span>
-        </a>
-
-        <span class="spacer"></span>
-        <button
-          class="live-demo"
-          aria-label="Live demo"
-          title="Book an appointment for a free live demo"
-        >
-          <span class="icon">headset_mic</span>
-          <span class="label">Live demo</span>
-        </button>
-        <a
-          class="try-yfiles"
-          aria-label="Try yFiles"
-          href="https://my.yworks.com/signup"
-          target="_blank"
-          title="Download yFiles from the yWorks Customer Center"
-        >
-          <span class="icon">download</span>
-          <span class="label">Try yFiles</span>
-        </a>
       </nav>
-      <a
-        aria-label="Legal Disclosure"
-        style="margin-top: auto"
-        href="https://www.yworks.com/company/legal/imprint"
-        target="_blank"
-        title="Open the Legal Disclosure page"
-      >
-        <span class="label">Legal Disclosure</span>
-      </a>
-      <a
-        aria-label="Privacy Policy"
-        href="https://www.yworks.com/company/legal/privacy"
-        target="_blank"
-        title="Open the Privacy Policy page"
-      >
-        <span class="label">Privacy Policy</span>
-      </a>
     </div>
     <dialog id="burger-menu" class="burger-menu" aria-label="Navigation menu">
       <!-- Main Menu Section -->
@@ -290,50 +237,15 @@
             <span id="linked-demos-hint" class="sr-only"
               >Navigate to a submenu of links to more demos</span
             >
-            <button class="item guided-tour-trigger" id="start-tour">Walkthrough</button>
-            <a
-              class="link github-link"
-              href="https://github.com/yWorks/vsdx-export-for-yfiles-for-html-demos/tree/master/demos/vsdx-export/orgchart/"
-              target="_blank"
-            >
-              <span>GitHub</span>
-              <span class="icon"> open_in_new</span>
-            </a>
-            <hr class="horizontal-separator" aria-hidden="true" />
+            <button class="item guided-tour-trigger hidden" id="start-tour">Walkthrough</button>
+
             <button class="item" id="toggle-theme">Switch theme</button>
             <a href="https://www.yfiles.com/the-yfiles-sdk" class="link secondary" target="_blank">
               <span>About yFiles</span>
               <span class="icon">open_in_new</span>
             </a>
-            <a
-              href="https://www.yfiles.com/the-yfiles-sdk/web/yfiles-for-html/vsdx-export"
-              class="link secondary"
-              target="_blank"
-            >
-              <span>About the VSDX Export addon</span>
-              <span class="icon">open_in_new</span>
-            </a>
-            <button
-              class="item primary"
-              data-navigate="live-demo"
-              aria-describedby="live-demo-hint"
-            >
-              Book a live demo
-            </button>
-            <span id="live-demo-hint" class="sr-only">Navigate to live demo submenu</span>
-            <a href="https://my.yworks.com/signup" class="link primary" target="_blank">
-              <span>Try yFiles</span>
-              <span class="icon">open_in_new</span>
-            </a>
           </nav>
         </main>
-        <footer class="footer">
-          <a href="https://www.yworks.com/company/legal/imprint" target="_blank"
-            >Legal Disclosure</a
-          >
-          <span class="vertical-separator" aria-hidden="true"></span>
-          <a href="https://www.yworks.com/company/legal/privacy" target="_blank">Privacy Policy</a>
-        </footer>
       </section>
 
       <!-- Linked Demos Submenu Section -->
@@ -368,24 +280,33 @@
         </header>
         <main>
           <div class="live-demo-container">
-            <h2 class="bold highlight">Live Demo — yFiles in Action</h2>
-            <p class="highlight">30–45 min | Online | No install required</p>
-            <p class="bold">For Developers, Product Mangers & Executives</p>
-            <ul class="compact">
-              <li>Interactive graph visualization in real time</li>
-              <li>Integration example</li>
-              <li>Live Q&A and next step recommendations</li>
+            <h2>See yFiles in action</h2>
+            <p class="highlight">30 min • Online • No install required</p>
+            <hr class="thin" />
+            <p class="bold">For developers, PMs & tech leads</p>
+            <ul class="check-list" style="max-width: 90%">
+              <li>Quick-start walkthrough + a real integration example</li>
+              <li>Live Q&A with next-step recommendations</li>
             </ul>
-            <p class="bold">30–45 minutes | 1:1 or team session</p>
-            <div class="live-demo-separator"></div>
+
+            <p class="remark">Prefer another tool over Zoom? Just say so when you book.</p>
+
             <div class="button-container">
               <a
-                class="btn bold"
-                href="https://www.yfiles.com/book-live-demo?demo-id=vsdx-organization-chart&demo-name=Organization Chart"
+                class="btn"
+                href="https://www.yfiles.com/book-live-demo?demo-name=Organization Chart"
                 target="_blank"
-                >Book a free live demo</a
+                >Pick a time</a
               >
             </div>
+
+            <p class="remark not-important">
+              Opens our scheduling page with Zoom's booking widget embedded. Using it shares your
+              data with Zoom under its
+              <a href="https://www.zoom.com/en/trust/privacy/privacy-statement/" target="_blank"
+                >Privacy Policy</a
+              >.
+            </p>
           </div>
         </main>
       </section>
@@ -393,24 +314,33 @@
 
     <div id="live-demo-popover" popover="auto" class="rail-popover dialog text-content">
       <div class="live-demo-container">
-        <h2 class="bold highlight">Live Demo — yFiles in Action</h2>
-        <p class="highlight">30–45 min | Online | No install required</p>
-        <p class="bold">For Developers, Product Mangers & Executives</p>
-        <ul class="compact">
-          <li>Interactive graph visualization in real time</li>
-          <li>Integration example</li>
-          <li>Live Q&A and next step recommendations</li>
+        <h2>See yFiles in action</h2>
+        <p class="highlight">30 min • Online • No install required</p>
+        <hr class="thin" />
+        <p class="bold">For developers, PMs & tech leads</p>
+        <ul class="check-list" style="max-width: 90%">
+          <li>Quick-start walkthrough + a real integration example</li>
+          <li>Live Q&A with next-step recommendations</li>
         </ul>
-        <p class="bold">30–45 minutes | 1:1 or team session</p>
-        <div class="live-demo-separator"></div>
+
+        <p class="remark">Prefer another tool over Zoom? Just say so when you book.</p>
+
         <div class="button-container">
           <a
-            class="btn bold"
-            href="https://www.yfiles.com/book-live-demo?demo-id=vsdx-organization-chart&demo-name=Organization Chart"
+            class="btn"
+            href="https://www.yfiles.com/book-live-demo?demo-name=Organization Chart"
             target="_blank"
-            >Book a free live demo</a
+            >Pick a time</a
           >
         </div>
+
+        <p class="remark not-important">
+          Opens our scheduling page with Zoom's booking widget embedded. Using it shares your data
+          with Zoom under its
+          <a href="https://www.zoom.com/en/trust/privacy/privacy-statement/" target="_blank"
+            >Privacy Policy</a
+          >.
+        </p>
       </div>
     </div>
 
@@ -453,7 +383,8 @@
         </div>
       </div>
       <div class="description-panel">
-        <h1>Organization Chart Demo</h1>
+        <div class="subheading">Demo</div>
+        <h1>Organization Chart</h1>
 
         <div>
           <p>
@@ -466,8 +397,9 @@
           </p>
           <p>
             The visualization of the employee is defined by an svg-template which is interpreted by
-            the node style using the
-            <a href="https://vuejs.org/v2/guide/index.html" target="_blank">Vue 2 framework</a>.
+            the node style using a LitNodeStyle that leverages the powerful data binding and
+            conditional rendering features of the
+            <a href="https://lit.dev/" target="_blank">Lit templating framework</a>.
           </p>
           <p>
             The demo also shows how a <a href="https://docs.yworks.com/vsdx-html/api/FilteredGraphWrapper" class="api" target="_blank">FilteredGraphWrapper</a> can be used to display a

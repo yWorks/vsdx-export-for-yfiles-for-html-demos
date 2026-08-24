@@ -1,6 +1,8 @@
-# VSSX Stencils Demo - VSDX Export for yFiles for HTML
+# VSSX Stencils Demo – yFiles for HTML
 
 <img src="../../../doc/demo-thumbnails/vsdx-stencils.webp" alt="demo-thumbnail" height="320"/>
+
+Demo
 
 Shows how to apply VSSX stencils to nodes in the diagram.
 

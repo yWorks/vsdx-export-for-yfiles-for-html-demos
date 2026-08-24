@@ -1,6 +1,8 @@
-# VSDX Template Demo - VSDX Export for yFiles for HTML
+# VSDX Template Demo – yFiles for HTML
 
 <img src="../../../doc/demo-thumbnails/vsdx-template.webp" alt="demo-thumbnail" height="320"/>
+
+Demo
 
 This demo shows how to use a VSDX file as a template for exporting a yFiles diagram.
 

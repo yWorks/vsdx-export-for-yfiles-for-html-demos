@@ -1,12 +1,14 @@
-# Organization Chart Demo - VSDX Export for yFiles for HTML
+# Organization Chart Demo – yFiles for HTML
 
 <img src="../../../doc/demo-thumbnails/vsdx-organization-chart.webp" alt="demo-thumbnail" height="320"/>
+
+Demo
 
 This demo shows how to create an interactive organization chart from JSON data and export it to a VSDX file.
 
 The source data is easily converted to a yFiles graph using class [TreeBuilder](https://docs.yworks.com/vsdx-html/api/TreeBuilder).
 
-The visualization of the employee is defined by an svg-template which is interpreted by the node style using the [Vue 2 framework](https://vuejs.org/v2/guide/index.html).
+The visualization of the employee is defined by an svg-template which is interpreted by the node style using a LitNodeStyle that leverages the powerful data binding and conditional rendering features of the [Lit templating framework](https://lit.dev/).
 
 The demo also shows how a [FilteredGraphWrapper](https://docs.yworks.com/vsdx-html/api/FilteredGraphWrapper) can be used to display a subgraph of the model graph.
 
@@ -38,7 +40,7 @@ Click on a superior, subordinate, or colleague link to select and zoom to the co
   - Hide children: hides the children of the currently selected employee.
   - Show children: Shows the children of the currently selected employee.
   - Show all: show all employees
-- In the toolbar, you can expand_all **Show All** nodes.
+- In the toolbar, you can expand\_all **Show All** nodes.
 - Change the zoom level to switch between three different levels of detail for node visualization.
 
 ## Developer Information

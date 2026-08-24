@@ -55,7 +55,6 @@ export function showNodeProperties(node, orgChartGraph) {
     createProperty('Dept.', employee.businessUnit ?? ''),
     createProperty('Email', employee.email ?? ''),
     createProperty('Phone', employee.phone ?? ''),
-    createProperty('Fax', employee.fax ?? ''),
     createProperty('Status', createSVGIcon(`${employee.status}_icon`, 100, 15, '0 2.5 70 5')),
   )
 
@@ -141,7 +140,7 @@ function createLinkEntry(employee, orgChartGraph) {
 }
 
 /**
- * Creates a list of links to the given employees by using {@see createLinkEntry} but also adds a
+ * Creates a list of links to the given employees by using {@link createLinkEntry} but also adds a
  * "," separator as text node between every link.
  */
 function createLinkEntryList(employees, orgChartGraph) {

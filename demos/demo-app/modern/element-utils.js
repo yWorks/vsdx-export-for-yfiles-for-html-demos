@@ -20,8 +20,30 @@
  *   THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {} from '@yfiles/yfiles'
-import { handleSplash } from '../initialize-ui'
+/**
+ * Executes a callback within a view transition if the browser supports it.
+ *
+ * @param callback The function to execute.
+ */
+export function maybeStartViewTransition(callback) {
+  // @ts-ignore
+  if (!document.startViewTransition) {
+    callback()
+    return
+  }
+
+  try {
+    // @ts-ignore
+    document.startViewTransition(callback)
+  } catch (e) {
+    if (!(e instanceof DOMException)) {
+      // we do not throw DOMExceptions and just ignore them - view transitions can throw when the
+      // view gets closed and similar - we don't care about that and don't want to bother the user
+      // as this is just for the looks.
+      throw e
+    }
+  }
+}
 
 /**
  * Adds options to an HTMLSelectElement
@@ -48,71 +70,80 @@ export function addOptions(selectElement, ...values) {
  * Adds navigation buttons to an HTMLSelectElement.
  *
  * @param selectElement The HTMLSelectElement.
+ * @param labelText
  * @param wrapAround Whether to wrap around when navigating beyond the end or beginning of the
  *   select.
- * @param wrapInDiv Whether to wrap the select and the navigation buttons into a new div element.
  * @param classes Additional classes for the navigation buttons.
  * @returns The given element for chaining other function calls.
  */
 export function addNavigationButtons(
   selectElement,
+  labelText = '',
   wrapAround = true,
-  wrapInDiv = true,
+  addNavButtons = true,
   ...classes
 ) {
   if (selectElement.parentElement == null) {
     throw new Error('The element must have a parent')
   }
+  let prevButton
+  let nextButton
+  if (addNavButtons) {
+    prevButton = document.createElement('button')
+    prevButton.classList.add('icon', 'navigation-button', ...classes)
+    prevButton.setAttribute('title', 'Previous')
+    prevButton.innerText = 'keyboard_arrow_left'
+    prevButton.addEventListener('click', (_) => {
+      const oldIndex = selectElement.selectedIndex
+      const newIndex = lastIndexOfEnabled(selectElement, oldIndex - 1, wrapAround)
+      if (oldIndex != newIndex && newIndex > -1) {
+        selectElement.selectedIndex = newIndex
+        selectElement.dispatchEvent(new Event('change'))
+      }
+    })
 
-  const prevButton = document.createElement('button')
-  prevButton.classList.add('icon', 'navigation-button', ...classes)
-  prevButton.setAttribute('title', 'Previous')
-  prevButton.innerText = 'keyboard_arrow_left'
-  prevButton.addEventListener('click', (_) => {
-    const oldIndex = selectElement.selectedIndex
-    const newIndex = lastIndexOfEnabled(selectElement, oldIndex - 1, wrapAround)
-    if (oldIndex != newIndex && newIndex > -1) {
-      selectElement.selectedIndex = newIndex
-      selectElement.dispatchEvent(new Event('change'))
-    }
-  })
-
-  const nextButton = document.createElement('button')
-  nextButton.classList.add('icon', 'navigation-button', ...classes)
-  nextButton.setAttribute('title', 'Next')
-  nextButton.innerText = 'keyboard_arrow_right'
-  nextButton.addEventListener('click', (_) => {
-    const oldIndex = selectElement.selectedIndex
-    const newIndex = indexOfEnabled(selectElement, oldIndex + 1, wrapAround)
-    if (oldIndex != newIndex && newIndex > -1) {
-      selectElement.selectedIndex = newIndex
-      selectElement.dispatchEvent(new Event('change'))
-    }
-  })
-
-  if (wrapInDiv) {
-    const wrapper = document.createElement('div')
-    wrapper.className = 'navigate-select'
+    nextButton = document.createElement('button')
+    nextButton.classList.add('icon', 'navigation-button', ...classes)
+    nextButton.setAttribute('title', 'Next')
+    nextButton.innerText = 'keyboard_arrow_right'
+    nextButton.addEventListener('click', (_) => {
+      const oldIndex = selectElement.selectedIndex
+      const newIndex = indexOfEnabled(selectElement, oldIndex + 1, wrapAround)
+      if (oldIndex != newIndex && newIndex > -1) {
+        selectElement.selectedIndex = newIndex
+        selectElement.dispatchEvent(new Event('change'))
+      }
+    })
+  }
+  const wrapper = document.createElement('div')
+  wrapper.className = 'navigate-select'
+  if (labelText) {
+    const labelWrapper = document.createElement('div')
+    labelWrapper.className = 'navigate-select-labeled'
+    const label = document.createElement('label')
+    label.className = 'navigate-select-label'
+    label.textContent += labelText
+    labelWrapper.appendChild(label)
+    labelWrapper.appendChild(wrapper)
+    selectElement.parentElement.insertBefore(labelWrapper, selectElement)
+  } else {
     selectElement.parentElement.insertBefore(wrapper, selectElement)
-
+  }
+  if (prevButton != undefined && nextButton != undefined) {
     wrapper.append(prevButton, selectElement, nextButton)
   } else {
-    selectElement.parentElement.insertBefore(prevButton, selectElement)
-    if (selectElement.nextElementSibling != null) {
-      selectElement.parentElement.insertBefore(nextButton, selectElement.nextElementSibling)
-    } else {
-      selectElement.parentElement.appendChild(nextButton)
+    wrapper.append(selectElement)
+  }
+  const updateDisabled = () => {
+    if (prevButton != undefined && nextButton != undefined) {
+      const lastIndex = selectElement.options.length - 1
+      prevButton.disabled =
+        selectElement.disabled || (!wrapAround && selectElement.selectedIndex === 0)
+      nextButton.disabled =
+        selectElement.disabled || (!wrapAround && selectElement.selectedIndex === lastIndex)
     }
   }
-
-  const updateDisabled = () => {
-    const lastIndex = selectElement.options.length - 1
-    prevButton.disabled =
-      selectElement.disabled || (!wrapAround && selectElement.selectedIndex === 0)
-    nextButton.disabled =
-      selectElement.disabled || (!wrapAround && selectElement.selectedIndex === lastIndex)
-  }
-
+  updateDisabled()
   selectElement.addEventListener('change', (_) => {
     updateDisabled()
   })
@@ -296,4 +327,85 @@ export function enableUIElements() {
 export async function showLoadingIndicator(visible, message) {
   handleSplash('.graph-panel', visible, message, true)
   return new Promise((resolve) => setTimeout(resolve, 2))
+}
+
+export function handleSplash(parentElementSelector, visible, message, immediate = false) {
+  const gp = document.querySelector(parentElementSelector)
+  if (!gp) return
+
+  let el = document.querySelector('#loading-indicator')
+
+  if (!el) {
+    el = document.createElement('div')
+    el.id = 'loading-indicator'
+    el.classList.add('graph-splash')
+    gp.prepend(el)
+    el.dataset.activeCount = '0'
+  }
+  let activeRequests = parseInt(el.dataset.activeCount || '0')
+
+  const THRESHOLD = 450
+  const MIN_VISIBLE = 700
+  const EXIT_DURATION = 250
+
+  if (visible) {
+    activeRequests++
+    el.dataset.activeCount = activeRequests.toString()
+
+    // Splash already running
+    if (activeRequests > 1) {
+      if (message) el.innerHTML = `<span class="loading-message">${message}</span>`
+      return
+    }
+
+    // initial splash show
+    if (message) el.innerHTML = `<span class="loading-message">${message}</span>`
+
+    clearTimeout(parseInt(el.dataset.splashTimer || '0'))
+
+    if (immediate) {
+      el.classList.remove('exit-splash')
+      el.classList.add('visible-splash')
+      el.dataset.startTime = Date.now().toString()
+    } else {
+      el.dataset.splashTimer = setTimeout(() => {
+        el.classList.remove('exit-splash')
+        el.classList.add('visible-splash')
+        el.dataset.startTime = Date.now().toString()
+      }, THRESHOLD).toString()
+    }
+
+    return
+  } else {
+    activeRequests = Math.max(0, activeRequests - 1)
+    el.dataset.activeCount = activeRequests.toString()
+
+    // other call requires running splash
+    if (activeRequests > 0) {
+      return
+    }
+
+    // animation not started yet
+    if (!el.dataset.startTime) {
+      clearTimeout(parseInt(el.dataset.splashTimer || '0'))
+      el.remove()
+      return
+    }
+
+    const elapsed = Date.now() - parseInt(el.dataset.startTime)
+    const remaining = Math.max(0, MIN_VISIBLE - elapsed)
+
+    setTimeout(() => {
+      // if we were already in the process of shutting down but other task kept splash alive
+      if (parseInt(el.dataset.activeCount || '0') > 0) return
+
+      el.classList.remove('visible-splash')
+      el.classList.add('exit-splash')
+
+      setTimeout(() => {
+        el.remove()
+      }, EXIT_DURATION)
+    }, remaining)
+    return
+  }
 }

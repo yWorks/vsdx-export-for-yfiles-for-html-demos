@@ -26,12 +26,25 @@ import './demo-overview-page.css'
 
 import { type DemoCategory, type DemoEntry, getCategoryNames, getDemos } from '../demo-data'
 
-type ExtendedDemoEntry = DemoEntry & Partial<{ element: HTMLElement }>
+type ExtendedDemoEntry = DemoEntry & Partial<{ element: HTMLElement; availableInPackage: boolean }>
 
 const allDemos = getDemos()
-const others = allDemos.filter((d) => !d.demoPath.startsWith('tutorial'))
-const tutorialDemos = allDemos.filter((d) => d.demoPath.startsWith('tutorial'))
 const categoryNames: Record<DemoCategory, string> = getCategoryNames()
+
+// @ts-ignore
+const isViewerPackage = 'Viewer' === ''
+// @ts-ignore
+const isLayoutPackage = 'Layout' === ''
+const isCompletePackage = !isViewerPackage && !isLayoutPackage
+
+const layoutCategories = [
+  'analysis',
+  'data-binding',
+  'layout',
+  'layout-features',
+  'showcase',
+  'tutorial-graph-builder',
+]
 
 const demos: ExtendedDemoEntry[] = allDemos
 
@@ -84,6 +97,25 @@ function createGridItem(demo: ExtendedDemoEntry, index: number): HTMLElement {
       </div>
     `
 
+  const availableInPackage =
+    isCompletePackage ||
+    (isViewerPackage &&
+      layoutCategories.indexOf(demo.category) === -1 &&
+      demo.distributionType !== 'needs-layout') ||
+    (isLayoutPackage && demo.distributionType === 'no-viewer')
+  demo.availableInPackage = availableInPackage
+  if (!availableInPackage) {
+    gridItem.classList.add('not-available')
+    const notAvailableNotice = document.createElement('div')
+    notAvailableNotice.className = 'not-available-notice'
+    notAvailableNotice.innerHTML = `<div>Requires "${
+      isViewerPackage ? 'layout' : 'viewer'
+    }" features to run.</div>
+         <div><a href="https://www.yfiles.com/demos/${demo.demoPath}">Run it online</a>
+          or view the source code files.</div>`
+    gridItem.appendChild(notAvailableNotice)
+  }
+
   return gridItem
 }
 
@@ -102,6 +134,8 @@ searchBox.addEventListener('blur', () => {
 resetSearchButton!.addEventListener('click', () => {
   searchBox.value = ''
 })
+
+let updatePillsContainerHeight: () => void = () => {}
 
 createStickySearchHeader()
 initializeCategoryPills()
@@ -127,10 +161,7 @@ function createStickySearchHeader() {
 }
 
 function initializeCategoryPills() {
-  const categoriesPillContainer = document.querySelector<HTMLDivElement>('.category-pills')
-  const header = document.querySelector<HTMLElement>('.overview-search-header')!
   const pillsContainer = document.querySelector<HTMLElement>('.category-pills')!
-  const pillsExpandToggle = document.querySelector<HTMLElement>('.overview-pills-expand-toggle')!
   const pills: { element: HTMLElement; searchValue: string }[] = []
 
   const seenCategories = new Set<string>()
@@ -139,7 +170,6 @@ function initializeCategoryPills() {
     const category = demo.category
     if (seenCategories.has(category)) return
     const categoryName = categoryNames[category]
-    seenCategories.add(category)
 
     const pill = document.createElement('input')
     pill.className = 'category-pill'
@@ -157,41 +187,9 @@ function initializeCategoryPills() {
       filterDemos(category, category)
       updateHash()
     })
-    categoriesPillContainer?.appendChild(pill)
+    pillsContainer.appendChild(pill)
     pills.push({ element: pill, searchValue: '' })
     seenCategories.add(category)
-  })
-
-  const pillHeight = pills[0].element.getBoundingClientRect().height
-  pillsContainer.style.height = `${pillHeight}px`
-
-  const intersectionObserver = new IntersectionObserver(
-    (entries) => {
-      const ratio = entries[0]?.intersectionRatio
-      // a ratio of zero means it's completely occluded
-      header.classList.toggle('last-pill-occluded', ratio === 0)
-    },
-    { root: pillsContainer },
-  )
-  intersectionObserver.observe(pills[pills.length - 1].element)
-
-  pillsExpandToggle.addEventListener('click', () => {
-    const firstPillBB = pills
-      .find((pill) => !pill.element.classList.contains('hidden'))!
-      .element.getBoundingClientRect()
-    const lastPillBB = pills
-      .findLast((pill) => !pill.element.classList.contains('hidden'))!
-      .element.getBoundingClientRect()
-
-    header.classList.toggle('expanded')
-    if (header.classList.contains('expanded')) {
-      const tallHeight = lastPillBB.bottom - firstPillBB.top
-      const heightLimit =
-        screen.height - pillsContainer.getBoundingClientRect().y - pillsExpandToggle.clientHeight
-      pillsContainer.style.height = `${Math.min(tallHeight, heightLimit)}px`
-    } else {
-      pillsContainer.style.height = `${firstPillBB.height}px`
-    }
   })
 }
 
@@ -286,6 +284,8 @@ function filterDemos(searchTerm: string, categoryFilter = '') {
     }
   })
 
+  updatePillsContainerHeight()
+
   baseTabIndex += sortedDemos.length
   tutorialIds.forEach((id) => {
     const gridElement = document.getElementById(id + '-grid')
@@ -350,7 +350,7 @@ function matchDemo(demo: ExtendedDemoEntry, needle: string, categoryFilter: stri
     return 0
   }
   const words = needle.split(/[^.\w/]/)
-  return words
+  const priority = words
     .map((word) => matchWord(demo, word))
     .reduce((prev, curr) => {
       if (categoryFilter) {
@@ -362,6 +362,8 @@ function matchDemo(demo: ExtendedDemoEntry, needle: string, categoryFilter: stri
         return prev === -1 ? curr : prev * curr
       }
     }, -1)
+  // if demo matches, increase priority for available demos
+  return priority + (priority > 0 && demo.availableInPackage ? 1000000 : 0)
 }
 
 /**
@@ -371,7 +373,7 @@ function matchDemo(demo: ExtendedDemoEntry, needle: string, categoryFilter: stri
  *   is 0 if the demo doesn't match at all.
  */
 function matchWord(demo: ExtendedDemoEntry, word: string): number {
-  const regex = new RegExp(word, 'gi')
+  const regex = new RegExp(regexpEscape(word), 'gi')
   if (regex.test(demo.name)) {
     return 100
   }
@@ -386,6 +388,13 @@ function matchWord(demo: ExtendedDemoEntry, word: string): number {
 
 function normalize(word: string) {
   return word.replaceAll(/\s|-/g, '')
+}
+
+/**
+ * Applies the Regexp.escape function if available and returns the original content otherwise.
+ */
+function regexpEscape(content: string): string {
+  return (RegExp as any).escape?.(content) ?? content
 }
 
 export function debounce<T extends unknown[], U>(

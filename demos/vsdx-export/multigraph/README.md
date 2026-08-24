@@ -1,6 +1,8 @@
-# Multi-Graph Export Demo - VSDX Export for yFiles for HTML
+# Multi-Graph Export Demo – yFiles for HTML
 
 <img src="../../../doc/demo-thumbnails/vsdx-multigraph.webp" alt="demo-thumbnail" height="320"/>
+
+Demo
 
 This demo shows how to use the `VsdxExport` with multiple graphs.
 
